@@ -1,2 +1,2 @@
-# Shortxn
+# Short-xn
 URL shortener
