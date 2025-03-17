@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"Shortxn/internal/domain"
+	"encoding/json"
 	"net/http"
 	"net/url"
 
@@ -17,12 +19,15 @@ func NewURLValidator(maxLength int) *URLValidator {
 
 func (v *URLValidator) ValidateURL(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var input struct {
-			URL string `json:"url"`
+		var input domain.URLRequest
+
+		decoder := json.NewDecoder(c.Request().Body)
+		if err := decoder.Decode(&input); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid JSON format. Expected: {\"url\": \"https://example.com\"}")
 		}
 
-		if err := c.Bind(&input); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid input format")
+		if input.URL == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "URL cannot be empty")
 		}
 
 		if len(input.URL) > v.MaxLength {
@@ -31,8 +36,9 @@ func (v *URLValidator) ValidateURL(next echo.HandlerFunc) echo.HandlerFunc {
 
 		_, err := url.ParseRequestURI(input.URL)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid URL format")
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid URL format")
 		}
+		c.Set("requestBody", input)
 
 		return next(c)
 	}

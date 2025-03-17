@@ -24,13 +24,13 @@ func NewPublisher(url string) (*Publisher, error) {
 	}
 
 	err = ch.ExchangeDeclare(
-		"analytics",
-		"fanout",
-		true,
-		false,
-		false,
-		false,
-		nil,
+		"analytics", // name
+		"fanout",    // type
+		true,        // durable
+		false,       // auto-deleted
+		false,       // internal
+		false,       // no-wait
+		nil,         // arguments
 	)
 
 	return &Publisher{
@@ -46,10 +46,10 @@ func (p *Publisher) PublishClickEvent(event *domain.ClickEvent) error {
 	}
 
 	return p.channel.Publish(
-		"analytics",
-		"",
-		false,
-		false,
+		"analytics", // exchange
+		"",          // routing key
+		false,       // mandatory
+		false,       // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
