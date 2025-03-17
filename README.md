@@ -2,6 +2,8 @@
 
 A high-performance URL shortening service built with Go, featuring analytics tracking and distributed architecture.
 
+![alt text](img/Example.png)
+
 ## Table of Contents
 
 1. [Features](#features)
