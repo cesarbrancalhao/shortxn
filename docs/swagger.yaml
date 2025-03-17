@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: A serverless URL shortener with analytics
+
+paths:
+  /shorten:
+    post:
+      summary: Create a shortened URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: URL shortened successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  short_url:
+                    type: string
+        '400':
+          description: Invalid input
+        '429':
+          description: Rate limit exceeded
+
+  /{id}:
+    get:
+      summary: Redirect to original URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '301':
+          description: Redirect to original URL
+        '404':
+          description: URL not found
+
+  /metrics:
+    get:
+      summary: Prometheus metrics endpoint
+      responses:
+        '200':
+          description: Metrics in Prometheus format
